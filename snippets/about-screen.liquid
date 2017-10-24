@@ -1,0 +1,51 @@
+<!-- /snippets/menu.liquid -->
+{% comment %}
+
+  This snippet generates the menu for the site depending on what section you're on
+{% endcomment %}
+
+{% assign blog_handle_color = '' %}
+{% case template %}
+{% when 'blog' %}
+{% assign blog_handle_color = blog.handle | append: '-color' %}
+{% endcase %}
+
+{% assign bg_color = blog.handle | append: '-color' %}
+
+{% assign credit_photography = blog.handle | append: '-photography'%}
+{% assign credit_video = blog.handle | append: '-video'%}
+{% assign credit_styling = blog.handle | append: '-styling'%}
+{% assign credit_hair = blog.handle | append: '-hair'%}
+{% assign template_name = template | replace: '.', ' ' | truncatewords: 1, '' | handle %}
+
+<section id="about-screen" class="background-change" style="background-color:{{ settings[bg_color] }}">
+	<article class="about-content">
+		<button class="close-about" data-module-init="about-link">
+			<span class="dummy"></span>
+			
+			<img src="{{ 'logo_gc.svg' | asset_url }}" class="gc" alt="Gauntlett Cheng" />
+			<img src="{{ 'logo_small_black.svg' | asset_url }}" class="gauntlett-cheng" alt="Gauntlett Cheng" />
+		
+		</button>
+		{{ pages.about-us.content }} 
+		
+		{% if template_name != 'product' and template_name != 'collection' %}
+		<div class="credits">
+			<label>Credits</label>
+			{% if settings[credit_photography] != '' %}<p>Photography: <span class="credits-photography">{{ settings[credit_photography] }}</span></p>{% endif %}
+			{% if settings[credit_video] != '' %}<p>Video: <span class="credits-video">{{ settings[credit_video] }}</span></p>{% endif %}
+			{% if settings[credit_styling] != '' %}<p>Styling: <span class="credits-styling">{{ settings[credit_styling] }}</span></p>{% endif %}
+			{% if settings[credit_hair] != '' %}<p>Hair: <span class="credits-hair">{{ settings[credit_hair] }}</span></p>{% endif %}
+			<p>Art Direction &amp; Design: <span>Studio D&mdash;M</span></p>
+		</div>
+		{% else %}
+		<div class="store-info">
+			{% if settings[store-policy] != '' %}<div class="about-row"><label>Policy</label><p>{{ settings.store-policy }}</p></div>{% endif %}
+			{% if settings[store-email] != '' %}<div class="about-row"><label>Email</label><p><a href="mailto:{{ settings.store-email }}" class="credits-photography">{{ settings.store-email }}</a></p></div>{% endif %}
+		</div>
+		{% endif %}
+		
+	</article>
+</section>
+
+

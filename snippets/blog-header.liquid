@@ -1,0 +1,16 @@
+<!-- /snippets/blog-header.liquid -->
+{% assign template_name = template | replace: '.', ' ' | truncatewords: 1, '' | handle %}
+<header class="home-link">
+	{% if template_name != 'product' and template_name != 'collection' %}
+	<button class="show-video" data-module-init="show-video">
+		<img src="{{ 'logo_gc.svg' | asset_url }}" class="gc" alt="Gauntlett Cheng">
+		<img src="{{ 'logo_small_black.svg' | asset_url }}" class="gauntlett-cheng" alt="Gauntlett Cheng">
+	</button>
+	{% else %}
+	<a href="/" title="Gauntlett Cheng Home" class="no-barba">
+		<img src="{{ 'logo_gc.svg' | asset_url }}" class="gc" alt="Gauntlett Cheng">
+		<img src="{{ 'logo_small_black.svg' | asset_url }}" class="gauntlett-cheng" alt="Gauntlett Cheng">
+	</a>
+	{% endif %}
+</header>
+

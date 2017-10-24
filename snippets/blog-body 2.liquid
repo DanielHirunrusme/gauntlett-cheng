@@ -1,0 +1,118 @@
+<!-- /snippets/blog-body.liquid -->
+{% assign blog_handle = blog.handle %}
+{% assign blog_handle_color = blog.handle | append: '-color' %}
+{% assign blog_handle_photography = blog.handle | append: '-photogaphy' %}
+{% assign blog_handle_video = blog.handle | append: '-video' %}
+{% assign blog_handle_styling = blog.handle | append: '-styling' %}
+{% assign blog_handle_hair = blog.handle | append: '-hair' %}
+
+<section class="blog-container" data-blog-id="{{ blog.handle }}" style="background-color:{{ settings[blog_handle_color] }}" data-hair-credits="{{ settings[blog_handle_hair] }}" data-photography-credits="{{ settings[blog_handle_photography] }}" data-video-credits="{{ settings[blog_handle_video] }}" data-styling-credits="{{ settings[blog_handle_styling] }}">
+
+
+
+
+
+{% for article in blog.articles limit:1 %}
+{% assign first_image = article | img_url: '1024x1024' %}
+{% endfor %}
+
+
+<div class="blog-article-holder">
+
+  <div class="blog-article-container" id="{{ blog.handle }}" data-firstImage="{{ first_image }}" data-module-init="collection-items">
+
+  {% assign title = 'title_' | append: blog_handle | append:'.svg' %}
+  {% assign season = blog_handle | remove:'-' | slice:0, 2 %}
+  {% assign year = blog_handle | remove:'-' | remove: season %}
+  <div class="blog-title">
+  	{{ title | asset_url | img_tag }}
+	<div class="blog-title-info">
+		<span>{{ season }}</span>
+		<span>{{ year }}</span>
+	</div>
+  </div>
+   
+    {% comment %}
+      Loop through each article in your blog. This is limited to what you set for pagination above.
+
+      For more info on article liquid tags:
+        - http://docs.shopify.com/themes/liquid-variables/article
+    {% endcomment %}
+
+    {% for article in blog.articles %}
+
+      <article class="blog-article">
+
+		<div class="article-content">{{ article.content }}</div>
+        {% if article.image %}
+          <button data-item-id="{{ forloop.index }}" class="article__featured-image article-button {% if forloop.index == 1 %}selected{% endif %}" href="{{ article.url }}"  id="{{ article.handle }}">
+            {{ article | img_url: '1024x1024', format: 'pjpg' | img_tag: article.title }}
+          </button>
+        {% endif %}
+
+        {% comment %}
+          Add a surrounding div with class 'rte' to anything that will come from the rich text editor.
+          Since this is just a listing page, you can either use the excerpt or truncate the full article.
+        
+        <div class="rte">
+          {% if article.excerpt.size > 0 %}
+            {{ article.excerpt }}
+          {% else %}
+            <p>{{ article.content | strip_html | truncatewords: 100 }}</p>
+          {% endif %}
+        </div>
+		{% endcomment %}
+		
+        {% comment %}
+          Show off meta information like number of comments and tags.
+        
+        <ul class="inline-list">
+          {% if blog.comments_enabled? %}
+          <li>
+            <a href="{{ article.url }}#comments">
+              {{ 'blogs.comments.with_count' | t: count: article.comments_count }}
+            </a>
+          </li>
+          {% endif %}
+
+          {% include 'tags-article' %}
+        </ul>
+
+        <p><a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }} &rarr;</a></p>
+		{% endcomment %}
+      </article>
+
+      {% unless forloop.last %}<hr>{% endunless %}
+
+    {% endfor %}
+
+    {% if paginate.pages > 1 %}
+      <hr>
+      <div class="pagination">
+        {{ paginate | default_pagination }}
+      </div>
+    {% endif %}
+
+  </div>
+ {% comment %}
+  <div class="grid__item large--one-quarter">
+    {% include 'blog-sidebar' %}
+  </div>
+   {% endcomment %}
+
+	{% assign credit_photography = blog.handle | append: '-photography'%}
+	{% assign credit_video = blog.handle | append: '-video'%}
+	{% assign credit_styling = blog.handle | append: '-styling'%}
+	{% assign credit_hair = blog.handle | append: '-hair'%}
+	<div class="blog-credits">
+		{% if settings[credit_photography] != '' %}<p>Photography: <span class="credits-photography">{{ settings[credit_photography] }}</span></p>{% endif %}
+		{% if settings[credit_video] != '' %}<p>Video: <span class="credits-video">{{ settings[credit_video] }}</span></p>{% endif %}
+		{% if settings[credit_styling] != '' %}<p>Styling: <span class="credits-styling">{{ settings[credit_styling] }}</span></p>{% endif %}
+		{% if settings[credit_hair] != '' %}<p>Hair: <span class="credits-hair">{{ settings[credit_hair] }}</span></p>{% endif %}
+	</div>
+
+</div>
+
+
+</section>
+

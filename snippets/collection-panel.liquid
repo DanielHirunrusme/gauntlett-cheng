@@ -1,0 +1,21 @@
+<!-- /snippets/collection-panel.liquid -->
+
+
+<section class="collection-panel barb" id="collection-panel" data-module-init="collection-panel">
+	
+	<article class="item-info">
+		<div class="item-info-container">
+			<h1 class="item-top-info"><label>Top</label> <span class="item-top"></span></h1>
+			<h1 class="item-bottom-info"><label>Bottom</label> <span class="item-bottom"></span></h1>
+		</div>
+	</article>
+	
+	<div id="panel-image" class="panel-image">
+		{% for article in blog.articles limit:1 %}
+	        {% if article.image %}
+	            {{ article | img_url: '1024x1024' | img_tag: article.title }}
+	        {% endif %}
+		{% endfor %}
+	</div>
+
+</section>

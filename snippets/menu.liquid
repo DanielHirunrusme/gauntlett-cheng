@@ -1,0 +1,56 @@
+<!-- /snippets/menu.liquid -->
+{% comment %}
+
+  This snippet generates the menu for the site depending on what section you're on
+{% endcomment %}
+
+<nav id="site-nav">
+	
+	{% comment %}
+		Get the main menu
+	{% endcomment %}
+	<ul id="main-menu" class="left-menu">
+	{% for link in linklists.main-menu.links %}
+	      <li id="link-{{ link.title }}" class="{% if template == 'collection' %}selected{% endif %}"><a href="{% if link.title != 'Shop' %}{{ link.url }}{% else %}{{ link.url }}{% endif %}" {% if link.title == 'Shop' %}class="no-barba" data-module-init='shop-link'{% endif %}>{{ link.title }}</a></li>
+	{% endfor %}
+	<li><button class="show-collection" data-module-init="show-collection">Lookbook</button></li>
+	</ul>
+	
+	{% comment %}
+		Get the collections menu
+	{% endcomment %}
+	
+	<ul id="collections-menu" class="right-menu">
+	{% for link in linklists.collections-menu.links %}
+		  
+  	  	{% assign b = link.object %}
+	
+  		{% assign left_video_blog = b.handle | append: '-left-video' %}
+  		{% assign right_video_blog = b.handle | append: '-right-video' %}
+		{% assign background_color = b.handle | append: '-color' %}
+		
+		{% assign current_url = '' %}
+
+		{% case template %}
+		{% when 'page' %}
+		{% assign current_url = page.url %}
+		{% when 'index' %}
+		{% assign current_url = blog.url %}
+		{% when 'blog' %}
+		{% assign current_url = blog.url %}
+		{% when 'article' %}
+		{% assign current_url = blog.url %}
+		{% when 'collection' %}
+		{% assign current_url = collection.url %}
+		{% when 'product' %}
+		{% assign current_url = product.url %}
+		{% endcase %}
+	
+	      <li><a id="collection-link-{{link.handle}}" class="{{ current_url }} collections-link {% if current_url == link.url %}selected{% endif %}" data-module-init="swap-title" href="{{ link.url }}" data-blog-handle="{{ b.handle }}" data-bgcolor="{{ settings[background_color] }}"  data-left-video="{{ settings[left_video_blog] }}" data-right-video="{{ settings[right_video_blog] }}">{{ link.title }} {{link.id}}</a></li>
+	{% endfor %}
+	</ul>
+	
+</nav>
+
+
+

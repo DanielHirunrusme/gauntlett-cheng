@@ -9,7 +9,9 @@
 
 {% endcomment %}
 
-<div itemscope itemtype="http://schema.org/Product">
+
+
+<div class="single-product" itemscope itemtype="http://schema.org/Product" data-module-init="product">
 
   <meta itemprop="url" content="{{ shop.url }}{{ product.url }}">
   <meta itemprop="image" content="{{ product.featured_image.src | img_url: 'grande' }}">
@@ -18,43 +20,69 @@
     Get first variant, or deep linked one
   {% endcomment %}
   {% assign current_variant = product.selected_or_first_available_variant %}
+ 
+ 
 
-  {% include 'breadcrumb' %}
-
-  <div class="grid product-single">
-    <div class="grid__item large--one-half text-center">
+  <div class="product-single">
+	  
+    <div class="product-title-mobile">
+  	  <h1 itemprop="name">{{ product.title }}</h1>
+        <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+        <span class="product-price" itemprop="price" content="{{ current_variant.price | divided_by: 100 }}">
+          {{ current_variant.price | money }} USD
+        </span>
+    </div>
+	  
+    <div class="">
       <div class="product-single__photos" id="ProductPhoto">
         {% assign featured_image = current_variant.featured_image | default: product.featured_image %}
-        <img src="{{ featured_image | img_url: 'large' }}" alt="{{ featured_image.alt | escape }}" id="ProductPhotoImg">
+        <!--<img src="{{ featured_image | img_url: 'large' }}" alt="{{ featured_image.alt | escape }}" id="ProductPhotoImg">-->
+		
+		{% assign image_divs = "" %}
+        {% for image in product.images %}
+		  {% assign image_alt =  image.alt | escape | slice: 2, image.alt.size %}
+		  {% assign image_divs =  image_divs | append: image_alt | append: '|' %} 
+		  
+          
+        {% endfor %}
+		
+
+		{% assign image_divs = image_divs | split: '|' | uniq | join: '|' %}
+		{% assign image_divs = image_divs | split: '|' %}
+	
+		
+		{% for div in image_divs %}
+
+			<div id="product-image-holder-{{ div }}" data-model="{{ div }}" class="product-images-holder">
+				{% for image in product.images %}
+					{% assign image_alt =  image.alt | escape | slice: 2, image.alt.size %}
+					{% if image_alt == div %}
+					<img src="{{ image | img_url: '1024x1024' }}" alt="{{ image.alt | escape }}" >
+					{% endif %}
+				{% endfor %}
+			</div>
+		{% endfor %}
+		
       </div>
 
       {% comment %}
         Create thumbnails if we have more than one product image
       {% endcomment %}
-      {% if product.images.size > 1 %}
-        <ul class="product-single__thumbnails grid-uniform" id="ProductThumbs">
-
-          {% for image in product.images %}
-            <li class="grid__item one-quarter">
-              <a href="{{ image.src | img_url: 'large' }}" class="product-single__thumbnail">
-                <img src="{{ image.src | img_url: 'compact' }}" alt="{{ image.alt | escape }}">
-              </a>
-            </li>
-          {% endfor %}
-
-        </ul>
-      {% endif %}
+      
     </div>
-
-    <div class="grid__item large--one-half">
-
+	</div><!-- product-single -->
+	
+    <div class="product-description" data-module-init="wheel-container">
+	<div class="product-description-dummy"></div>
+	<div class="product-description-holder">
+		
       <h1 itemprop="name">{{ product.title }}</h1>
 
       <div itemprop="offers" itemscope itemtype="http://schema.org/Offer">
         <meta itemprop="priceCurrency" content="{{ shop.currency }}">
 
         <link itemprop="availability" href="http://schema.org/{% if product.available %}InStock{% else %}OutOfStock{% endif %}">
-
+		
         {% comment %}
           ID addToCartForm is a selector for the ajax cart plugin
         {% endcomment %}
@@ -73,6 +101,20 @@
             For more information on products with multiple options, visit:
               - http://docs.shopify.com/support/your-website/themes/can-i-make-my-theme-use-products-with-multiple-options#update-product-liquid
           {% endcomment %}
+         
+
+          <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
+          <span class="product-price" itemprop="price" content="{{ current_variant.price | divided_by: 100 }}">
+            {{ current_variant.price | money }} USD
+          </span>
+		  
+	      <div class="product-description-text rte" itemprop="description">
+		  
+	        {{ product.description }}
+			
+           
+	      </div>
+		  
           <select name="id" id="productSelect" class="product-single__variants">
             {% for variant in product.variants %}
               {% if variant.available %}
@@ -89,32 +131,259 @@
               {% endif %}
             {% endfor %}
           </select>
+		  
+		  
+		  
+		  {% if product.variants.size >= 1 %}
+          <script type="text/javascript" charset="utf-8">
+            jQuery(function() {
+              var first_variant_price = jQuery("ul li input[type='radio']:checked").attr("data-price");
+              var first_variant_compare_at_price = jQuery("ul li input[type='radio']:checked").attr("data-compare-at-price") || '';
+			  
+		      
+			 
+			  
+			  
+              //jQuery(".product-price").html(first_variant_price);
+              //jQuery(".price-field del").html(first_variant_compare_at_price);
+              jQuery("input[type='radio']").click(function() {
+				  console.log('VARIANT CLICKED')
+                var variant_price = jQuery(this).attr("data-price");
+                jQuery(".product-price").html(variant_price);
+                var variant_compare_at_price = jQuery(this).attr("data-compare-at-price") || '';
+                jQuery(".price-field del").html(variant_compare_at_price);
+                // Get delivery date from span below variant title & update hidden line item property
+                //var delivery_date = jQuery("ul li input[type='radio']:checked").siblings("span").html();
+                //jQuery("#delivery-date").val(delivery_date);
+				var pos = $(this).parent().index();
+				
+				console.log($(this).parent().find('label').eq($(this).index()));
+				$('#product-variants').find('label').removeClass('selected');
+				$('#product-variants').find('li').eq(pos).find('label').addClass('selected');
+				
+				//console.log($(this).index());
+				
+	  		    $('select>option:eq('+pos+')').prop('selected', true).change();
+			  
+              });
+			  
+			  console.log(jQuery("ul li input[type='radio']:checked"));
+              // Set initial value for hidden line item property
+              //jQuery("ul li input[type='radio']:checked").click();
+            });
+          </script>
+		  
+		  
+		  <!--
+		  <div id="product-models">
+			  <span>Model</span>
+			  <script type="text/javascript">
+			  function getParameter(paramName) {
+			    var searchString = window.location.search.substring(1),
+			        i, val, params = searchString.split("&");
 
-          <span class="visually-hidden">{{ 'products.general.regular_price' | t }}</span>
-          <span id="ProductPrice" class="h2" itemprop="price" content="{{ current_variant.price | divided_by: 100 }}">
-            {{ current_variant.price | money }}
-          </span>
+			    for (i=0;i<params.length;i++) {
+			      val = params[i].split("=");
+			      if (val[0] == paramName) {
+			        return val[1];
+			      }
+			    }
+			    return null;
+			  }
+			  
+			  function getURLParameter(name) {
+			          return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null;
+			      }
 
-          {% if product.compare_at_price_max > product.price %}
-            <span class="visually-hidden">{{ 'products.general.sale_price' | t }}</span>
-            <p id="ComparePrice">
-              {{ 'products.product.compare_at' | t }} {{ current_variant.compare_at_price | money }}
-            </p>
-          {% endif %}
+			  function changeUrlParam (param, value) {
+			          var currentURL = window.location.href+'&';
+			          var change = new RegExp('('+param+')=(.*)&', 'g');
+			          var newURL = currentURL.replace(change, '$1='+value+'&');
 
-          <label for="Quantity" class="quantity-selector">{{ 'products.product.quantity' | t }}</label>
-          <input type="number" id="Quantity" name="quantity" value="1" min="1" class="quantity-selector">
+			          if (getURLParameter(param) !== null){
+			              try {
+			                  window.history.replaceState('', '', newURL.slice(0, - 1) );
+			              } catch (e) {
+			                  console.log(e);
+			              }
+			          } else {
+			              var currURL = window.location.href;
+			              if (currURL.indexOf("?") !== -1){
+			                  window.history.replaceState('', '', currentURL.slice(0, - 1) + '&' + param + '=' + value);
+			              } else {
+			                  window.history.replaceState('', '', currentURL.slice(0, - 1) + '?' + param + '=' + value);
+			              }
+			          }
+			      }
+			  
+			  function replaceUrlParam(e,r,a){var n=new RegExp("("+r+"=).*?(&|$)"),c=e;return c=e.search(n)>=0?e.replace(n,"$1"+a+"$2"):c+(c.indexOf("?")>0?"&":"?")+r+"="+a};
+			  
+			    var models = [];
+				var model_param = getParameter('model');
+				//console.log('model_param ' + model_param)
+				
+			  	{% for image in product.images %}
+					var img_name = "{{ image.alt | escape }}"; 
+					var img_num = Number(img_name.charAt(0));
+					
+					img_name = img_name.substring(2);
 
-          <button type="submit" name="add" id="AddToCart" class="btn">
-            <span id="AddToCartText">{{ 'products.product.add_to_cart' | t }}</span>
-          </button>
+					if(models.length == 0) {
+						models.push(img_name);
+					} else {
+						
+						if(jQuery.inArray(img_name, models) != -1) {
+						    console.log("is in array");
+						} else {
+						    console.log("is NOT in array");
+							models.push(img_name);
+						} 
+						
+					}
+					
+			  	
+			  	{% endfor %}
+				
+				console.log(models)
+				
+				//add buttons to switch images
+				/*
+				for(var i=0; i<models.length; i++) {
+					if(model_param != '') {
+						if(model_param != models[i]) {
+							
+							if(i < models.length - 1) {
+								$('#product-models').append('<button data-model="'+models[i]+'" class="model-btn" href="?model='+models[i]+'">'+models[i]+'</button>');
+							} else {
+								$('#product-models').append('<button data-model="'+models[i]+'" class="model-btn" href="?model='+models[i]+'">'+models[i]+'</button>');
+								$('.model-btn').eq(0).addClass('selected')
+							}
+						} else {
+							$('#product-models').append('<button data-model="'+models[i]+'" href="?model='+models[i]+'" class="selected model-btn">'+models[i]+'</button>');
+						}
+					} else {
+						if(i > 0)
+						$('#product-models').append('<button data-model="'+models[i]+'" class="model-btn" href="?model='+models[i]+'">'+models[i]+'</button>');
+						else
+						$('#product-models').append('<button data-model="'+models[i]+'" href="?model='+models[i]+'" class="selected model-btn">'+models[i]+'</button>');
+					}
+					
+					
+					if(i < models.length - 1)
+					$('#product-models').append('<span class="separator">&nbsp;/&nbsp;</span>');
+				}
+				//console.log(models);
+				*/
+				
+				$('.product-images-holder').each(function(){
+					console.log($(this).data('model'))
+					if($(this).data('model') == models[0]) {
+						
+					} else {
+						$(this).hide();
+					}
+				})
+				
+				
+				
+				$('.model-btn').on('click', function(e) {
+					e.preventDefault();
+					e.stopPropagation();
+					
+					$('.model-btn').removeClass('selected');
+					$(this).addClass('selected');
+					
+					
+		       	 	var view = $(this).data('view'),
+		            	url = document.URL,
+		            	hasParams = url.indexOf('?') > -1;
+					
+					var model_name = $(this).data('model');
+					
+					$('.product-images-holder').each(function(){
+						console.log($(this).data('model'))
+						if($(this).data('model') == model_name) {
+							$(this).show();
+						} else {
+							$(this).hide();
+						}
+					})
+					
+					$('.scroll-container').scrollTop(0);
+					
+					/*
+					for(var i=0; i<$('.product-photos').length; i++) {
+						var alt = $('.product-photos').eq(i).attr('alt');
+						//console.log('alt ' + alt);
+						if (alt.indexOf(model_name) >= 0) {
+							$('.product-photos').eq(i).show();
+						} else {
+							$('.product-photos').eq(i).hide();
+						}
+					}
+					*/
+				
+					
+			        if (hasParams) {
+						//changeUrlParam('model', model_name)
+						//window.location.search = jQuery.query.set("model", model_name);
+					  //window.history.replaceState({}, document.title, "?model=" + model_name);
+			          //window.location = replaceUrlParam(url, 'model', model_name);
+			        } else {
+						//changeUrlParam('model', model_name)
+			          //window.location = url + '?model=' + model_name;
+			        }
+				});
+				
+			  </script>
+		  </div>
+			  -->
+		  
+		  <div class="add-to-cart-holder" data-module-init="addcart-sticky">
+	          <div id="product-variants">
+				<span>{{ product.options.first | escape }}</span>
+	            <ul>
+	              {% assign found_available_variant = false %}
+	              {% for variant in product.variants %}
+			  
+	              <li>{% if variant.available %}
+	                <input type="radio"{% if variant.compare_at_price > variant.price %} data-compare-at-price="{{ variant.compare_at_price | money_with_currency }}"{% endif %} data-price="{{ variant.price | money_with_currency }}" id="{{ variant.id }}" value="{{ variant.id }}" name="id"{% if found_available_variant == false  %}{% assign found_available_variant = true %} {% endif %} {% if variant == product.selected_or_first_available_variant %} checked="checked" {% endif %} />
+	                <label {% if variant == product.selected_or_first_available_variant %} class="selected" {% endif %} for="{{ variant.id }}">{{ variant.title }}</label>{% if product.variants.size > 1 and forloop.index != product.variants.size %}<span class="comma">,</span>{% endif %}
+	                <br /><span id="delivery-date-{{ variant.price }}"></span><br /><br />
+	                {% else %}
+	                <input type="radio" class="out-of-stock" id="{{ variant.id }}" value="{{ variant.id }}" name="id" disabled="disabled" />
+	                <label for="{{ variant.id }}" class="out-of-stock">{{ variant.title }}</label>{% endif %}
+	              </li>
+	              {% endfor %}
+	            </ul>
+	          </div>
+	        {% else %}
+	          <input type="text" name="id" value="{{ product.variants.first.id }}" />
+	        {% endif %}
+		  
+		  
+
+	          {% if product.compare_at_price_max > product.price %}
+	            <span class="visually-hidden">{{ 'products.general.sale_price' | t }}</span>
+	            <p id="ComparePrice">
+	              {{ 'products.product.compare_at' | t }} {{ current_variant.compare_at_price | money }}
+	            </p>
+	          {% endif %}
+		  
+			  {% comment %}
+	          <label for="Quantity" class="quantity-selector">{{ 'products.product.quantity' | t }}</label>
+	          <input type="number" id="Quantity" name="quantity" value="1" min="1" class="quantity-selector">
+			  {% endcomment %}
+		  
+	          <button type="submit" name="add" id="AddToCart" class="btn">
+	            <span id="AddToCartText">{{ 'products.product.add_to_cart' | t }}</span>
+	          </button>
+	  	  </div><!-- add-to-cart-holder -->
         </form>
 
       </div>
 
-      <div class="product-description rte" itemprop="description">
-        {{ product.description }}
-      </div>
+     
 
       {% comment %}
         If the user is on a collection product page (ie with /collections/collection-handle/products/product-handle)
@@ -138,9 +407,10 @@
       {% endif %}
 
     </div>
+	</div>
   </div>
 
-</div>
+
 
 {% comment %}
   To take advantage of a callback on the select dropdown, add option_selection.js
@@ -166,6 +436,8 @@
       selector: selector
     });
   };
+  
+  
 
   jQuery(function($) {
     new Shopify.OptionSelectors('productSelect', {
@@ -181,7 +453,7 @@
 
     // Hide selectors if we only have 1 variant and its title contains 'Default'.
     {% if product.variants.size == 1 and product.variants.first.title contains 'Default' %}
-      $('.selector-wrapper').hide();
+      //$('.selector-wrapper').hide();
     {% endif %}
   });
 </script>

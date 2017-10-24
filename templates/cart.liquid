@@ -8,8 +8,8 @@
 {% endcomment %}
 
 {% if cart.item_count > 0 %}
+<section id="cart">
 
-  <h1>{{ 'cart.general.title' | t }}</h1>
   <form action="/cart" method="post" novalidate class="cart table-wrap">
     <table class="cart-table full table--responsive">
       <thead class="cart__row cart__header-labels">
@@ -127,4 +127,5 @@
   <h2>{{ 'cart.general.title' | t }}</h2>
   <p>{{ 'cart.general.empty' | t }}</p>
   <p>{{ 'cart.general.continue_browsing_html' | t }}</p>
+</section>
 {% endif %}

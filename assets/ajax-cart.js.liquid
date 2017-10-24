@@ -310,7 +310,7 @@ var ajaxCart = (function(module, $) {
        *   - A hard-coded url of no-image
       */
       if (cartItem.image != null){
-        var prodImg = cartItem.image.replace(/(\.[^.]*)$/, "_small$1").replace('http:', '');
+        var prodImg = cartItem.image.replace(/(\.[^.]*)$/, "_medium$1").replace('http:', '');
       } else {
         var prodImg = "//cdn.shopify.com/s/assets/admin/no-image-medium-cc9732cb976dd349a0df1d39816fbcc7.gif";
       }
@@ -348,6 +348,21 @@ var ajaxCart = (function(module, $) {
     }
 
     $cartContainer.append(template(data));
+
+	$('.ajaxcart__product').on('mouseover mousemove', function(e){
+		//console.log($(this));
+		var x = e.clientX - $('.ajaxcart__product').position().left + $(this).find('.ajaxcart__product-image').width();
+		
+		if(x >= $(window).width()  - $(this).find('.ajaxcart__product-image').width() ) {
+			console.log('over')
+			x = $(window).width() - $(this).find('.ajaxcart__product-image').width();
+		}
+		
+		var y = e.clientY - $('.drawer__header').height();
+		$(this).find('.ajaxcart__product-image').show().css('left', x).css('top', y);
+	}).on('mouseout', function(){
+		$(this).find('.ajaxcart__product-image').hide();
+	});
 
     cartCallback(cart);
   };
@@ -430,12 +445,14 @@ var ajaxCart = (function(module, $) {
       var $row = $('.ajaxcart__row[data-line="' + line + '"]').addClass('is-loading');
 
       if (qty === 0) {
-        $row.parent().addClass('is-removed');
+        //$row.parent().addClass('is-removed');
+		$row.parent().remove();
       }
 
       // Slight delay to make sure removed animation is done
+	  ShopifyAPI.changeItem(line, qty, adjustCartCallback);
       setTimeout(function() {
-        ShopifyAPI.changeItem(line, qty, adjustCartCallback);
+        //ShopifyAPI.changeItem(line, qty, adjustCartCallback);
       }, 250);
     }
 
@@ -452,10 +469,13 @@ var ajaxCart = (function(module, $) {
     // Update quantity and price
     updateCountPrice(cart);
 
+    isUpdating = false;
+    ShopifyAPI.getCart(buildCart);
+	
     // Reprint cart on short timeout so you don't see the content being removed
     setTimeout(function() {
-      isUpdating = false;
-      ShopifyAPI.getCart(buildCart);
+      //isUpdating = false;
+      //ShopifyAPI.getCart(buildCart);
     }, 150)
   };
 

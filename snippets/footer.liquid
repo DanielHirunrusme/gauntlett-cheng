@@ -1,0 +1,85 @@
+<!-- begin site-footer -->
+{% assign blog_handle = blog.handle %}
+{% assign blog_handle_color = blog.handle | append: '-color' %}
+
+<footer class="site-footer small--text-center" role="contentinfo" style="background-color:{{ settings[blog_handle_color] }}">
+	
+      {% if settings.footer_social_enable %}
+            <ul class="inline-list social-icons row">
+              {% if settings.social_twitter_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_twitter_link }}" title="{{ shop.name }} on Twitter">
+                    Twitter
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_instagram_link != blank %}
+                <li>
+                  <a class="icon-fallback-text" href="{{ settings.social_facebook_link }}" title="{{ shop.name }} on Facebook">
+                    Facebook
+                  </a>
+                </li>
+              {% endif %}
+              {% if settings.social_facebook_link != blank %}
+              <li>
+                <a class="icon-fallback-text" href="{{ settings.social_instagram_link }}" title="{{ shop.name }} on Instagram">
+                  Instagram
+                </a>
+              </li>
+                
+              {% endif %}
+            </ul>
+
+      {% endif %}
+      {% if settings.footer_newsletter_enable %}
+        <div class="grid__item large--one-third push--large--one-third medium--one-half">
+          {% comment %}
+            MailChimp is the go-to newsletter service for Shopify.
+            Use the link below to find your MailChimp form action
+            and insert it in your site settings.
+
+            If the form action URL is not set in the theme settings,
+            it will fallback to a customer form so you can still capture the email.
+
+            MailChimp newsletter integration and requirement:
+             - http://docs.shopify.com/support/configuration/store-customization/where-do-i-get-my-mailchimp-form-action
+          {% endcomment %}
+          <h3>{{ 'layout.footer.newsletter_title' | t }}</h3>
+          {% if settings.newsletter_form_action != blank %}
+            <form action="{{ settings.newsletter_form_action }}" method="post" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" target="_blank" class="input-group">
+              <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.newsletter_email' | t }}" name="EMAIL" id="mail" class="input-group-field" aria-label="{{ 'general.newsletter_form.newsletter_email' | t }}" autocorrect="off" autocapitalize="off">
+              <span class="input-group-btn">
+                <input type="submit" class="btn" name="subscribe" id="subscribe" value="{{ 'general.newsletter_form.submit' | t }}">
+              </span>
+            </form>
+          {% else %}
+            {% form 'customer' %}
+              {{ form.errors | default_errors }}
+              {% if form.posted_successfully? %}
+                <p class="note form-success">{{ 'general.newsletter_form.confirmation' | t }}</p>
+              {% else %}
+                <div class="input-group">
+                  <input type="email" value="{% if customer %}{{ customer.email }}{% endif %}" placeholder="{{ 'general.newsletter_form.newsletter_email' | t }}" name="contact[email]" id="Email" class="input-group-field" aria-label="{{ 'general.newsletter_form.newsletter_email' | t }}" autocorrect="off" autocapitalize="off">
+                  <input type="hidden" name="contact[tags]" value="newsletter">
+                  <span class="input-group-btn">
+                    <input type="submit" class="btn" name="subscribe" id="subscribe" value="{{ 'general.newsletter_form.submit' | t }}">
+                  </span>
+                </div>
+              {% endif %}
+            {% endform %}
+          {% endif %}
+
+        </div>
+      {% endif %}
+	  
+	  <div class="row">
+		  <a href="/pages/about-us" class=" button--contact"><span>C</span><span>o</span><span>n</span><span>t</span><span>a</span><span>c</span><span>t</span></a>
+	  </div>
+	  
+	  <div class="row">
+		  <li><a href="{{ shop.url }}" class="gc-logo">{{ 'logo_large.svg' | asset_url | img_tag }}</a></li>
+		  <li><span class="copyright">Copyright 2016</span></li>
+	  </div>
+
+</footer>
+<!-- //site-footer -->

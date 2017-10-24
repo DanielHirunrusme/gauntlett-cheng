@@ -5,159 +5,52 @@
 
   More info on global variables (available on all templates):
     - http://docs.shopify.com/themes/liquid-variables/global
+
+
+
+<section id="homepage-video" data-module-init="homepage-video">
+	
+	<div class="left-video video-holder">
+		
+	</div>
+	
+	<div class="right-video video-holder">
+		
+	</div>
+	
+	<div id="left-player" class="video-holder"></div>
+	<div id="right-player" class="video-holder"></div>
+	<!--
+	<div class="videoWrapper">
+	    <iframe width="100%" height="100%" src="https://www.youtube.com/embed/3ZtrS_D3HLY?rel=0&hd=1?autoplay=true" frameborder="0" allowfullscreen></iframe>
+	</div>
+	-->
+</section> 
+
+ 
+
+<section id="homepage-titles">
+	<button class="about-link" data-module-init="about-link">{{ 'logo_large.svg' | asset_url | img_tag }}</button>
+	
+	<div class="titles">
+		<button class="link-home">{{ 'title_ss16.svg' | asset_url | img_tag }}</button>
+		<button class="link-home">{{ 'title_ss15.svg' | asset_url | img_tag }}</button>
+		<button class="link-home">{{ 'title_aw16.svg' | asset_url | img_tag }}</button>
+		<button class="link-home">{{ 'title_aw15.svg' | asset_url | img_tag }}</button>
+		<button class="link-home">{{ 'title_ss17.svg' | asset_url | img_tag }}</button>
+		<button class="link-home">{{ 'title_aw17.svg' | asset_url | img_tag }}</button>
+		<!--
+		<h1>Never Step Where you have Fallen<h1>
+		<h1>Time to say Goodbye<h1>
+		<h1>Going back to Long Island, Going back to Jersey, Going back to Perth<h1>
+			-->
+	</div>
+		
+</section>
+
+
 {% endcomment %}
 
-<h2>{{ 'homepage.sections.frontpage_title' | t }}</h2>
 
-{% comment %}
-  Use class grid-uniform to have evenly sized columns clear
-  each other properly at each breakpoint.
-{% endcomment %}
-<div class="grid-uniform">
-
-  {% comment %}
-    Loop through products in your Frontpage collection.
-    This collection is created by default, but you must add products to it.
-  {% endcomment %}
-  {% for product in collections.frontpage.products limit:4 %}
-
-    {% comment %}
-      Change the grid item width by using classes from the grid in
-      the grid_item_width variable.
-
-      Example:
-        - {% assign grid_item_width = 'large--one-third medium--one-half' %}
-    {% endcomment %}
-    {% assign grid_item_width = 'large--one-quarter medium--one-half' %}
-    {% include 'product-grid-item' %}
-
-  {% else %}
-    {% comment %}
-      For onboarding new users to your theme, we add some default products and onboarding tutorials to help populate their store
-    {% endcomment %}
-    {% unless emptyState %}
-      {{ 'theme-onboarding.css' | global_asset_url | stylesheet_tag }}
-      {% assign emptyState = true %}
-    {% endunless %}
-
-    {% include 'onboarding-featured-products' %}
-
-  {% endfor %}
-
-</div>
-
-<hr>
-
-<h2>{{ 'homepage.sections.featured_title' | t }}</h2>
-
-<div class="grid-uniform">
-
-  {% comment %}
-    Show five collections, unless it's 'frontpage'.
-
-    Use an index variable in combination to the limit filter
-    to account for the frontpage collection being in top six returned.
-
-    Use variable isEmpty to check if no collections will be shown.
-    For empty store demo only.
-  {% endcomment %}
-  {% assign index = 1 %}
-  {% assign isEmpty = true %}
-
-  {% for collection in collections limit:6 %}
-    {% unless index > 5 %}
-
-      {% unless collection.handle == 'frontpage' %}
-        {% assign isEmpty = false %}
-        {% assign collection_item_width = 'large--one-fifth medium--one-third' %}
-        <div class="grid__item {{ collection_item_width }} text-center">
-          {% comment %}
-            Use capture to put the collection title in a variable that is used in liquid filters
-          {% endcomment %}
-          {% capture collection_title %}{{ collection.title | escape }}{% endcapture %}
-
-          <a href="{{ collection.url }}" title="{{ 'collections.general.link_title' | t: title: collection_title }}" class="grid__image">
-            {% if collection.image %}
-              {{ collection.image.src | img_url: 'large' | img_tag: collection_title }}
-            {% else %}
-              {{ collection.products.first.featured_image | img_url: 'large' | img_tag: collection_title }}
-            {% endif %}
-          </a>
-
-          <p>
-            <a href="{{ collection.url }}" title="{{ 'collections.general.link_title' | t: title: collection_title }}">{{ collection.title }}</a><br>
-            {{ 'collections.general.items_with_count' | t: count: collection.all_products_count }}
-          </p>
-        </div>
-        {% assign index = index | plus: 1 %}
-      {% endunless %}
-
-    {% endunless %}
-  {% endfor %}
-
-  {% comment %}
-    For onboarding new users to your theme, we add some default collections and onboarding tutorials to help populate their store
-  {% endcomment %}
-
-  {% if isEmpty %}
-    {% unless emptyState %}
-      {{ 'theme-onboarding.css' | global_asset_url | stylesheet_tag }}
-      {% assign emptyState = true %}
-    {% endunless %}
-
-    {% include 'onboarding-featured-collections' %}
-  {% endif %}
-
-</div>
-
-<hr>
-
-{% comment %}
-  Loop through three recent blog articles with the following code.
-
-  Since we're not on the blog template, we need to define the blog
-  handle we want to focus on. For this example we'll use the default 'news',
-  but you can create a blog page-specific content if you want.
-{% endcomment %}
-<h2>{{ 'homepage.sections.news_title' | t }}</h2>
-
-<div class="grid">
-  {% for article in blogs['news'].articles limit:3 %}
-
-    <div class="grid__item large--one-third">
-
-      <time datetime="{{ article.published_at | date: '%Y-%m-%d' }}">{{ article.published_at | date: format: 'month_day_year' }}</time>
-      <h3><a href="{{ article.url }}">{{ article.title }}</a></h3>
-
-      {% comment %}
-        Add a surrounding div with class 'rte' to anything that will come from the rich text editor.
-        Since this is just a listing page, you can either use the excerpt or truncate the full article.
-      {% endcomment %}
-      <div class="rte">
-        {% if article.excerpt.size > 0 %}
-          {{ article.excerpt }}
-        {% else %}
-          <p>{{ article.content | strip_html | truncatewords: 20 }}</p>
-        {% endif %}
-      </div>
-
-      {% comment %}
-        Show off meta information like number of comments and tags.
-      {% endcomment %}
-      <ul>
-        {% if blog.comments_enabled? %}
-        <li>
-          <a href="{{ article.url }}#comments">
-            {{ article.comments_count }}
-            {{ 'blogs.comments.with_count' | t: count: article.comments_count }}
-          </a>
-        </li>
-        {% endif %}
-      </ul>
-
-      <p><a href="{{ article.url }}">{{ 'blogs.article.read_more' | t }} &rarr;</a></p>
-
-    </div>
-
-  {% endfor %}
-</div>
+{% assign: blog = blogs.f-w-2017 %}
+{% include 'blog-body' %}

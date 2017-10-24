@@ -6,46 +6,23 @@
 
 {% endcomment %}
 
-{% paginate collection.products by 12 %}
 
-{% include 'breadcrumb' %}
+
 
 {% comment %}
   Use .grid--rev so that the collection tags appear below the products on mobile
 {% endcomment %}
-<div class="grid--rev">
-  <div class="grid__item large--three-quarters">
-
-    {% comment %}
-      Different markup if a collection description exists
-    {% endcomment %}
-    {% if collection.description != blank %}
-      <header class="section-header">
-        <h1 class="section-header__title">{{ collection.title }}</h1>
-        <div class="rte rte--header">
-          {{ collection.description }}
-        </div>
-      </header>
-      <hr>
-      <div class="section-header">
-        <div class="section-header__right">
-          {% include 'collection-sorting' %}
-        </div>
-      </div>
-    {% else %}
-      <header class="section-header">
-        <h1 class="section-header__title section-header__left">{{ collection.title }}</h1>
-        <div class="section-header__right">
-          {% include 'collection-sorting' %}
-        </div>
-      </header>
-    {% endif %}
+<div id="collection-template-container" class="grid--rev scroll-container">
+  <div class="product-container">
+	 
+	 
+	 <h1 class="mobile-shop-title">Online Shop<br>S/S 2017</h1>
 
     {% comment %}
       Use class grid-uniform to have evenly sized columns clear
       each other properly at each breakpoint.
     {% endcomment %}
-    <div class="grid-uniform">
+
 
       {% comment %}
         Loop through our products in the current collection.
@@ -81,7 +58,7 @@
 
       {% endfor %}
 
-    </div>
+
 
     {% if paginate.pages > 1 %}
       <hr>
@@ -97,4 +74,3 @@
   </div>
 </div>
 
-{% endpaginate %}

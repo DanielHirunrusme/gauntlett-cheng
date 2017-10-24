@@ -1,0 +1,33 @@
+<!-- /snippets/homepage-video.liquid -->
+	
+{% comment %}
+	create an invisible youtube video playlist
+{% endcomment %}
+
+
+{% assign background_color = '' %}
+{% case template %}
+{% when 'blog' %}
+{% assign background_color = blog.handle | append: '-color' %}
+{% endcase %}
+
+{% assign left_video = blog.handle | append: '-left-video' %}
+{% assign right_video = blog.handle | append: '-right-video' %}
+{% assign bg_color = blog.handle | append: '-color' %}
+
+<section class="blog-video-container background-change homepage-video" id="video-container-{{ blog.handle }}" data-blog-handle="{{ blog.handle }}" data-left-video="{{ settings[left_video] }}" data-right-video="{{ settings[right_video] }}" data-module-init="homepage-video"  style="background-color:{{ settings[bg_color] }}">
+	
+	
+	
+	<div id="left-player-{{blog.handle}}" class="video-holder"></div>
+	
+	<div id="right-player-holder-{{blog.handle}}" class="right-video-holder">
+		<div id="right-player-{{blog.handle}}" class="video-holder"></div>
+	</div>
+	
+	
+	
+</section>
+
+
+
